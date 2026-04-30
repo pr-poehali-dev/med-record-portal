@@ -6,10 +6,10 @@ const DOCTOR_IMG = "https://cdn.poehali.dev/projects/2a12294a-315c-43a4-8358-1d0
 const DIAG_IMG = "https://cdn.poehali.dev/projects/2a12294a-315c-43a4-8358-1d053e21c963/files/5edcd9b0-3400-4fa3-a852-a4e64c41ffed.jpg";
 
 const doctors = [
-  { id: 1, name: "Анна Сергеевна Миронова", spec: "Кардиолог", exp: "15 лет", rating: 4.9, reviews: 312, price: "от 2 500 ₽", clinic: "МедиКлиник Центр", nearest: "Сегодня, 14:30", avatar: DOCTOR_IMG, tags: ["Взрослые", "Дети от 12"] },
-  { id: 2, name: "Дмитрий Алексеевич Воронов", spec: "Невролог", exp: "12 лет", rating: 4.8, reviews: 248, price: "от 2 200 ₽", clinic: "МедиКлиник Север", nearest: "Завтра, 10:00", avatar: DOCTOR_IMG, tags: ["Взрослые"] },
-  { id: 3, name: "Елена Владимировна Орлова", spec: "Педиатр", exp: "20 лет", rating: 5.0, reviews: 520, price: "от 1 900 ₽", clinic: "МедиКлиник Центр", nearest: "Сегодня, 16:00", avatar: DOCTOR_IMG, tags: ["Дети до 18"] },
-  { id: 4, name: "Сергей Иванович Зайцев", spec: "Ортопед", exp: "8 лет", rating: 4.7, reviews: 180, price: "от 2 800 ₽", clinic: "МедиКлиник Юг", nearest: "Завтра, 12:30", avatar: DOCTOR_IMG, tags: ["Взрослые"] },
+  { id: 1, name: "Анна Сергеевна Миронова", spec: "Кардиолог", exp: "15 лет", rating: 4.9, reviews: 312, price: 2500, clinic: "МедиКлиник Центр", nearest: "Сегодня, 14:30", avatar: DOCTOR_IMG, tags: ["Взрослые", "Дети от 12"], discount: 20 },
+  { id: 2, name: "Дмитрий Алексеевич Воронов", spec: "Невролог", exp: "12 лет", rating: 4.8, reviews: 248, price: 2200, clinic: "МедиКлиник Север", nearest: "Завтра, 10:00", avatar: DOCTOR_IMG, tags: ["Взрослые"], discount: 0 },
+  { id: 3, name: "Елена Владимировна Орлова", spec: "Педиатр", exp: "20 лет", rating: 5.0, reviews: 520, price: 1900, clinic: "МедиКлиник Центр", nearest: "Сегодня, 16:00", avatar: DOCTOR_IMG, tags: ["Дети до 18"], discount: 15 },
+  { id: 4, name: "Сергей Иванович Зайцев", spec: "Ортопед", exp: "8 лет", rating: 4.7, reviews: 180, price: 2800, clinic: "МедиКлиник Юг", nearest: "Завтра, 12:30", avatar: DOCTOR_IMG, tags: ["Взрослые"], discount: 0 },
 ];
 
 const clinics = [
@@ -19,22 +19,41 @@ const clinics = [
 ];
 
 const services = [
-  { id: 1, icon: "Heart", name: "Кардиология", desc: "ЭКГ, УЗИ сердца, мониторинг", price: "от 1 500 ₽", color: "from-rose-400 to-pink-500" },
-  { id: 2, icon: "Brain", name: "Неврология", desc: "МРТ, ЭЭГ, консультации", price: "от 1 800 ₽", color: "from-violet-400 to-purple-500" },
-  { id: 3, icon: "Eye", name: "Офтальмология", desc: "Проверка зрения, коррекция", price: "от 1 200 ₽", color: "from-sky-400 to-blue-500" },
-  { id: 4, icon: "Baby", name: "Педиатрия", desc: "Осмотр детей, вакцинация", price: "от 1 400 ₽", color: "from-emerald-400 to-teal-500" },
-  { id: 5, icon: "Bone", name: "Ортопедия", desc: "Лечение суставов, позвоночника", price: "от 2 000 ₽", color: "from-amber-400 to-orange-500" },
-  { id: 6, icon: "Stethoscope", name: "Терапия", desc: "Общий осмотр, лечение ОРВИ", price: "от 1 100 ₽", color: "from-cyan-400 to-sky-500" },
+  { id: 1, icon: "Heart", name: "Кардиология", desc: "ЭКГ, УЗИ сердца, мониторинг", price: 1500, discount: 0, color: "from-rose-400 to-pink-500" },
+  { id: 2, icon: "Brain", name: "Неврология", desc: "МРТ, ЭЭГ, консультации", price: 1800, discount: 10, color: "from-violet-400 to-purple-500" },
+  { id: 3, icon: "Eye", name: "Офтальмология", desc: "Проверка зрения, коррекция", price: 1200, discount: 0, color: "from-sky-400 to-blue-500" },
+  { id: 4, icon: "Baby", name: "Педиатрия", desc: "Осмотр детей, вакцинация", price: 1400, discount: 25, color: "from-emerald-400 to-teal-500" },
+  { id: 5, icon: "Bone", name: "Ортопедия", desc: "Лечение суставов, позвоночника", price: 2000, discount: 0, color: "from-amber-400 to-orange-500" },
+  { id: 6, icon: "Stethoscope", name: "Терапия", desc: "Общий осмотр, лечение ОРВИ", price: 1100, discount: 15, color: "from-cyan-400 to-sky-500" },
 ];
 
 const diagnostics = [
-  { id: 1, name: "МРТ всего тела", desc: "Полная диагностика органов и систем. Результат за 24 часа.", price: "от 8 500 ₽", duration: "60 мин", img: DIAG_IMG, badge: "Популярное" },
-  { id: 2, name: "УЗИ комплексное", desc: "Органы брюшной полости, малого таза, щитовидная железа.", price: "от 3 200 ₽", duration: "40 мин", img: DIAG_IMG, badge: null },
-  { id: 3, name: "КТ грудной клетки", desc: "Высокоточная томография лёгких и сердца.", price: "от 5 800 ₽", duration: "30 мин", img: DIAG_IMG, badge: "Срочно" },
-  { id: 4, name: "Лабораторные анализы", desc: "Клинический, биохимический анализ крови. Онлайн результаты.", price: "от 850 ₽", duration: "15 мин", img: DIAG_IMG, badge: null },
+  { id: 1, name: "МРТ всего тела", desc: "Полная диагностика органов и систем. Результат за 24 часа.", price: 8500, discount: 15, duration: "60 мин", img: DIAG_IMG, badge: "Популярное" },
+  { id: 2, name: "УЗИ комплексное", desc: "Органы брюшной полости, малого таза, щитовидная железа.", price: 3200, discount: 0, duration: "40 мин", img: DIAG_IMG, badge: null },
+  { id: 3, name: "КТ грудной клетки", desc: "Высокоточная томография лёгких и сердца.", price: 5800, discount: 20, duration: "30 мин", img: DIAG_IMG, badge: "Срочно" },
+  { id: 4, name: "Лабораторные анализы", desc: "Клинический, биохимический анализ крови. Онлайн результаты.", price: 850, discount: 0, duration: "15 мин", img: DIAG_IMG, badge: null },
 ];
 
 const times = ["09:00","09:30","10:00","10:30","11:00","12:00","14:00","14:30","15:00","15:30","16:00","17:00"];
+
+function fmt(n: number) { return n.toLocaleString("ru-RU") + " ₽"; }
+function discounted(price: number, pct: number) { return Math.round(price * (1 - pct / 100)); }
+
+function PriceTag({ price, discount, size = "md", prefix = "от " }: { price: number; discount: number; size?: "sm" | "md" | "lg"; prefix?: string }) {
+  const finalPrice = discount > 0 ? discounted(price, discount) : price;
+  const sz = { sm: { main: "text-xs", old: "text-[10px]", badge: "text-[9px] px-1.5 py-0.5" }, md: { main: "text-sm", old: "text-xs", badge: "text-[10px] px-2 py-0.5" }, lg: { main: "text-lg", old: "text-sm", badge: "text-xs px-2.5 py-1" } }[size];
+  return (
+    <div className="flex items-center gap-1.5 flex-wrap">
+      {discount > 0 && (
+        <span className={`bg-rose-500 text-white font-bold rounded-lg ${sz.badge} leading-none`}>−{discount}%</span>
+      )}
+      <span className={`font-golos font-bold ${sz.main} text-foreground`}>{prefix}{fmt(finalPrice)}</span>
+      {discount > 0 && (
+        <span className={`${sz.old} text-muted-foreground line-through`}>{fmt(price)}</span>
+      )}
+    </div>
+  );
+}
 
 type Tab = "home" | "doctors" | "clinics" | "services" | "diagnostics" | "doctor" | "clinic" | "booking";
 type Doctor = typeof doctors[0];
@@ -364,7 +383,7 @@ export default function Index() {
                   </div>
                   <h3 className="font-golos font-semibold text-sm mb-1">{s.name}</h3>
                   <p className="text-muted-foreground text-xs mb-3 leading-relaxed">{s.desc}</p>
-                  <p className="text-primary text-xs font-semibold">{s.price}</p>
+                  <PriceTag price={s.price} discount={s.discount} size="sm" />
                 </div>
               ))}
             </div>
@@ -406,8 +425,8 @@ export default function Index() {
                       <p className="text-muted-foreground text-xs leading-relaxed mb-3">{d.desc}</p>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-golos font-bold text-base">{d.price}</p>
-                          <div className="flex items-center gap-1 text-muted-foreground text-xs mt-0.5">
+                          <PriceTag price={d.price} discount={d.discount} size="md" />
+                          <div className="flex items-center gap-1 text-muted-foreground text-xs mt-1">
                             <Icon name="Clock" size={11} />{d.duration}
                           </div>
                         </div>
@@ -425,72 +444,7 @@ export default function Index() {
 
         {/* DOCTOR PAGE */}
         {activeTab === "doctor" && (
-          <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 animate-fade-in">
-            <button onClick={() => setActiveTab("doctors")} className="flex items-center gap-2 text-sm text-muted-foreground mb-5 hover:text-foreground transition-colors">
-              <Icon name="ChevronLeft" size={18} />Назад к списку
-            </button>
-            <div className="bg-white rounded-3xl shadow-lg overflow-hidden mb-5">
-              <div className="h-52 md:h-64 relative overflow-hidden">
-                <img src={selectedDoctor.avatar} alt={selectedDoctor.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <h1 className="font-golos font-bold text-xl md:text-2xl">{selectedDoctor.name}</h1>
-                  <p className="text-white/80 text-sm">{selectedDoctor.spec} · {selectedDoctor.exp} опыта</p>
-                </div>
-              </div>
-              <div className="p-5">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center gap-1">
-                    <Icon name="Star" size={16} className="text-amber-400 fill-amber-400" />
-                    <span className="font-semibold text-sm">{selectedDoctor.rating}</span>
-                    <span className="text-muted-foreground text-xs">({selectedDoctor.reviews} отзывов)</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                    <Icon name="Building2" size={14} /><span>{selectedDoctor.clinic}</span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {selectedDoctor.tags.map(t => (
-                    <span key={t} className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">{t}</span>
-                  ))}
-                </div>
-                <p className="text-sm text-muted-foreground mb-5">
-                  Высококвалифицированный специалист с многолетним опытом работы. Специализируется на диагностике и лечении широкого спектра заболеваний. Применяет современные методы лечения, придерживается принципов доказательной медицины.
-                </p>
-                <div className="flex items-center justify-between py-4 border-t border-border">
-                  <div>
-                    <p className="text-muted-foreground text-xs mb-0.5">Стоимость приёма</p>
-                    <p className="font-golos font-bold text-lg">{selectedDoctor.price}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-muted-foreground text-xs mb-0.5">Ближайшая запись</p>
-                    <p className="font-medium text-sm text-emerald-600">{selectedDoctor.nearest}</p>
-                  </div>
-                </div>
-                <button onClick={() => goBooking(selectedDoctor)} className="w-full mt-4 grad-primary text-white font-semibold py-3.5 rounded-2xl text-sm hover:opacity-90 transition-all shadow-lg">
-                  Записаться на приём
-                </button>
-              </div>
-            </div>
-            <div className="bg-white rounded-3xl shadow-sm p-5">
-              <h3 className="font-golos font-semibold text-base mb-4">Отзывы пациентов</h3>
-              {[
-                { name: "Мария К.", text: "Отличный специалист, внимательный и профессиональный подход!", date: "2 дня назад" },
-                { name: "Андрей В.", text: "Быстро поставил диагноз, назначил эффективное лечение. Рекомендую!", date: "1 неделю назад" },
-              ].map((r, i) => (
-                <div key={i} className={`pb-4 ${i < 1 ? "border-b border-border mb-4" : ""}`}>
-                  <div className="flex justify-between mb-1.5">
-                    <span className="font-medium text-sm">{r.name}</span>
-                    <span className="text-muted-foreground text-xs">{r.date}</span>
-                  </div>
-                  <div className="flex gap-0.5 mb-1.5">
-                    {[...Array(5)].map((_, j) => <Icon key={j} name="Star" size={12} className="text-amber-400 fill-amber-400" />)}
-                  </div>
-                  <p className="text-sm text-muted-foreground">{r.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          <DoctorPage doctor={selectedDoctor} onBack={() => setActiveTab("doctors")} onBook={() => goBooking(selectedDoctor)} />
         )}
 
         {/* CLINIC PAGE */}
@@ -859,11 +813,14 @@ function DoctorCard({ doc, index, onSelect, onBook }: { doc: DoctorType; index: 
       </div>
 
       {/* Footer */}
-      <div className="px-4 pb-4 pt-1 border-t border-border/40 flex items-center gap-2">
-        <div className="flex gap-1.5 flex-wrap flex-1">
-          {doc.tags.map((t: string) => (
-            <span key={t} className="px-2 py-0.5 rounded-full bg-blue-50 text-primary text-[10px] font-medium">{t}</span>
-          ))}
+      <div className="px-4 pb-4 pt-2 border-t border-border/40 flex items-center gap-2">
+        <div className="flex-1">
+          <PriceTag price={doc.price} discount={doc.discount} size="sm" />
+          <div className="flex gap-1.5 flex-wrap mt-1">
+            {doc.tags.map((t: string) => (
+              <span key={t} className="px-2 py-0.5 rounded-full bg-blue-50 text-primary text-[10px] font-medium">{t}</span>
+            ))}
+          </div>
         </div>
         <button
           onClick={() => selectedSlot ? onBook() : onSelect()}
@@ -875,6 +832,206 @@ function DoctorCard({ doc, index, onSelect, onBook }: { doc: DoctorType; index: 
         >
           {selectedSlot ? "Записаться" : "Смотреть"}
         </button>
+      </div>
+    </div>
+  );
+}
+
+function DoctorPage({ doctor, onBack, onBook }: { doctor: typeof doctors[0]; onBack: () => void; onBook: () => void }) {
+  const [pageClinicId, setPageClinicId] = useState<number | null>(null);
+  const [pageDayIdx, setPageDayIdx] = useState(0);
+  const [pageSlot, setPageSlot] = useState<string | null>(null);
+  const [pageClinicOpen, setPageClinicOpen] = useState(false);
+  const pageDaysRef = useRef<HTMLDivElement>(null);
+
+  const currentDay = DAYS_DATA[pageDayIdx];
+  const pageClinicObj = clinics.find(c => c.id === pageClinicId);
+
+  const scrollPageDays = (dir: "left" | "right") => {
+    if (pageDaysRef.current) pageDaysRef.current.scrollBy({ left: dir === "left" ? -120 : 120, behavior: "smooth" });
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 animate-fade-in">
+      <button onClick={onBack} className="flex items-center gap-2 text-sm text-muted-foreground mb-5 hover:text-foreground transition-colors">
+        <Icon name="ChevronLeft" size={18} />Назад к списку
+      </button>
+
+      {/* Hero */}
+      <div className="bg-white rounded-3xl shadow-lg overflow-hidden mb-4">
+        <div className="h-52 md:h-64 relative overflow-hidden">
+          <img src={doctor.avatar} alt={doctor.name} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute bottom-4 left-4 right-4 text-white">
+            <h1 className="font-golos font-bold text-xl md:text-2xl">{doctor.name}</h1>
+            <p className="text-white/80 text-sm">{doctor.spec} · {doctor.exp} опыта</p>
+          </div>
+          {doctor.discount > 0 && (
+            <div className="absolute top-4 right-4 bg-rose-500 text-white font-bold text-sm px-3 py-1.5 rounded-2xl shadow-lg">
+              −{doctor.discount}%
+            </div>
+          )}
+        </div>
+        <div className="p-5">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="flex items-center gap-1">
+              <Icon name="Star" size={15} className="text-amber-400 fill-amber-400" />
+              <span className="font-semibold text-sm">{doctor.rating}</span>
+              <span className="text-muted-foreground text-xs">({doctor.reviews} отзывов)</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {doctor.tags.map(t => (
+                <span key={t} className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">{t}</span>
+              ))}
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Высококвалифицированный специалист с многолетним опытом. Специализируется на диагностике и лечении широкого спектра заболеваний. Применяет современные методы, придерживается принципов доказательной медицины.
+          </p>
+          <div className="flex items-center justify-between py-3 border-t border-border">
+            <div>
+              <p className="text-muted-foreground text-xs mb-1">Стоимость приёма</p>
+              <PriceTag price={doctor.price} discount={doctor.discount} size="lg" />
+            </div>
+            <div className="text-right">
+              <p className="text-muted-foreground text-xs mb-0.5">Ближайшая запись</p>
+              <p className="font-medium text-sm text-emerald-600">{doctor.nearest}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Booking block */}
+      <div className="bg-white rounded-3xl shadow-sm border border-border/50 overflow-hidden mb-4">
+        <div className="px-5 pt-5 pb-4">
+          <h3 className="font-golos font-semibold text-base mb-3">Выбрать время приёма</h3>
+
+          {/* Clinic */}
+          <div className="relative mb-4">
+            <p className="text-xs text-muted-foreground font-medium mb-1.5">Клиника</p>
+            <button
+              onClick={() => setPageClinicOpen(o => !o)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl border text-sm font-medium transition-all ${pageClinicOpen ? "border-primary bg-primary/5" : "border-border bg-muted/30 hover:border-primary/40"}`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Icon name="Building2" size={16} className="text-primary shrink-0" />
+                <span className="truncate">{pageClinicObj ? pageClinicObj.name : "Выберите клинику"}</span>
+              </div>
+              <Icon name={pageClinicOpen ? "ChevronUp" : "ChevronDown"} size={16} className="text-muted-foreground shrink-0 ml-2" />
+            </button>
+            {pageClinicOpen && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-2xl border border-border z-20 overflow-hidden animate-scale-in">
+                {clinics.map(c => (
+                  <button
+                    key={c.id}
+                    onClick={() => { setPageClinicId(c.id); setPageClinicOpen(false); setPageSlot(null); }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/40 transition-colors border-b border-border/30 last:border-0 ${pageClinicId === c.id ? "bg-primary/5" : ""}`}
+                  >
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${pageClinicId === c.id ? "bg-primary text-white" : "bg-muted"}`}>
+                      <Icon name="Building2" size={14} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold">{c.name}</p>
+                      <p className="text-muted-foreground text-xs mt-0.5 truncate">м. {c.metro} · {c.address}</p>
+                      <p className="text-emerald-600 text-[11px] mt-0.5">{c.open}</p>
+                    </div>
+                    {pageClinicId === c.id && <Icon name="Check" size={16} className="text-primary shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Days */}
+          <p className="text-xs text-muted-foreground font-medium mb-1.5">Выберите день</p>
+          <div className="flex items-center gap-1.5 mb-3">
+            <button onClick={() => scrollPageDays("left")} className="w-7 h-7 flex items-center justify-center rounded-xl bg-muted/60 hover:bg-muted transition-colors shrink-0">
+              <Icon name="ChevronLeft" size={14} />
+            </button>
+            <div ref={pageDaysRef} className="flex gap-2 overflow-x-auto scroll-hide flex-1 py-1">
+              {DAYS_DATA.map((day, i) => (
+                <button
+                  key={i}
+                  onClick={() => { setPageDayIdx(i); setPageSlot(null); }}
+                  disabled={day.slots.length === 0}
+                  className={`shrink-0 w-[52px] flex flex-col items-center py-2.5 rounded-2xl border transition-all duration-200 ${
+                    pageDayIdx === i
+                      ? "grad-primary text-white border-transparent shadow-md scale-105"
+                      : day.slots.length === 0
+                      ? "bg-muted/30 border-border/30 opacity-40 cursor-not-allowed"
+                      : "bg-white border-border hover:border-primary/50 hover:bg-primary/5"
+                  }`}
+                >
+                  <span className={`text-[10px] font-medium mb-0.5 ${pageDayIdx === i ? "text-white/70" : "text-muted-foreground"}`}>{day.dayName}</span>
+                  <span className={`text-base font-golos font-bold leading-none ${pageDayIdx === i ? "text-white" : "text-foreground"}`}>{day.dayNum}</span>
+                  <span className={`text-[10px] mt-0.5 ${pageDayIdx === i ? "text-white/60" : "text-muted-foreground"}`}>{day.monthName}</span>
+                  {day.slots.length > 0 && (
+                    <div className={`w-1 h-1 rounded-full mt-1 ${pageDayIdx === i ? "bg-white/60" : "bg-emerald-400"}`} />
+                  )}
+                </button>
+              ))}
+            </div>
+            <button onClick={() => scrollPageDays("right")} className="w-7 h-7 flex items-center justify-center rounded-xl bg-muted/60 hover:bg-muted transition-colors shrink-0">
+              <Icon name="ChevronRight" size={14} />
+            </button>
+          </div>
+
+          {/* Time slots */}
+          <p className="text-xs text-muted-foreground font-medium mb-2">Свободные слоты</p>
+          {currentDay.slots.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {currentDay.slots.map(t => (
+                <button
+                  key={t}
+                  onClick={() => setPageSlot(s => s === t ? null : t)}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold border transition-all duration-150 ${
+                    pageSlot === t
+                      ? "grad-primary text-white border-transparent shadow-sm"
+                      : "bg-white border-border hover:border-primary hover:text-primary hover:bg-primary/5"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 py-3 text-muted-foreground text-sm">
+              <Icon name="CalendarX" size={16} />Нет свободных слотов на этот день
+            </div>
+          )}
+        </div>
+
+        <div className="px-5 pb-5">
+          <button
+            onClick={onBook}
+            disabled={!pageSlot}
+            className={`w-full py-3.5 rounded-2xl text-sm font-semibold transition-all shadow-lg mt-2 ${
+              pageSlot ? "grad-primary text-white hover:opacity-90" : "bg-muted text-muted-foreground cursor-not-allowed"
+            }`}
+          >
+            {pageSlot ? `Записаться на ${currentDay.dayName} ${currentDay.dayNum} в ${pageSlot}` : "Выберите время"}
+          </button>
+        </div>
+      </div>
+
+      {/* Reviews */}
+      <div className="bg-white rounded-3xl shadow-sm p-5">
+        <h3 className="font-golos font-semibold text-base mb-4">Отзывы пациентов</h3>
+        {[
+          { name: "Мария К.", text: "Отличный специалист, внимательный и профессиональный подход!", date: "2 дня назад" },
+          { name: "Андрей В.", text: "Быстро поставил диагноз, назначил эффективное лечение. Рекомендую!", date: "1 неделю назад" },
+        ].map((r, i) => (
+          <div key={i} className={`pb-4 ${i < 1 ? "border-b border-border mb-4" : ""}`}>
+            <div className="flex justify-between mb-1.5">
+              <span className="font-medium text-sm">{r.name}</span>
+              <span className="text-muted-foreground text-xs">{r.date}</span>
+            </div>
+            <div className="flex gap-0.5 mb-1.5">
+              {[...Array(5)].map((_, j) => <Icon key={j} name="Star" size={12} className="text-amber-400 fill-amber-400" />)}
+            </div>
+            <p className="text-sm text-muted-foreground">{r.text}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
