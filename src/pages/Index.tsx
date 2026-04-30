@@ -13,9 +13,9 @@ const doctors = [
 ];
 
 const clinics = [
-  { id: 1, name: "МедиКлиник Центр", address: "ул. Тверская, 15, Москва", metro: "Тверская", rating: 4.9, reviews: 1240, img: CLINIC_IMG, services: 85, doctors: 42, open: "08:00 – 21:00", lat: 55.7651, lon: 37.6061 },
-  { id: 2, name: "МедиКлиник Север", address: "пр. Мира, 87, Москва", metro: "Алексеевская", rating: 4.8, reviews: 890, img: CLINIC_IMG, services: 70, doctors: 35, open: "07:00 – 22:00", lat: 55.7985, lon: 37.6353 },
-  { id: 3, name: "МедиКлиник Юг", address: "ул. Варшавская, 34, Москва", metro: "Варшавская", rating: 4.7, reviews: 654, img: CLINIC_IMG, services: 60, doctors: 28, open: "09:00 – 20:00", lat: 55.6521, lon: 37.6187 },
+  { id: 1, name: "МедиКлиник Центр", address: "ул. Тверская, 15, Москва", metro: "Тверская", rating: 4.9, reviews: 1240, img: CLINIC_IMG, services: 85, doctors: 42, open: "08:00 – 21:00" },
+  { id: 2, name: "МедиКлиник Север", address: "пр. Мира, 87, Москва", metro: "Алексеевская", rating: 4.8, reviews: 890, img: CLINIC_IMG, services: 70, doctors: 35, open: "07:00 – 22:00" },
+  { id: 3, name: "МедиКлиник Юг", address: "ул. Варшавская, 34, Москва", metro: "Варшавская", rating: 4.7, reviews: 654, img: CLINIC_IMG, services: 60, doctors: 28, open: "09:00 – 20:00" },
 ];
 
 const services = [
@@ -654,55 +654,38 @@ export default function Index() {
   );
 }
 
-const DAY_NAMES = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
-const MONTH_NAMES = ["янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
-const ALL_SLOTS = ["09:00","09:30","10:00","10:30","11:00","12:00","13:00","14:00","14:30","15:00","15:30","16:00","17:00","18:00"];
-
-function seededRand(seed: number) {
-  let s = seed;
-  return () => { s = (s * 1664525 + 1013904223) & 0xffffffff; return (s >>> 0) / 0xffffffff; };
-}
-
-function generateClinicSlots(clinicId: number): { dayNum: number; dayName: string; monthName: string; dayDate: Date; slots: string[] }[] {
-  const days = [];
+function generateDays() {
+  const days: { date: Date; dayNum: number; dayName: string; monthName: string; slots: string[] }[] = [];
+  const dayNames = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+  const monthNames = ["янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+  const allSlots = ["09:00","09:30","10:00","10:30","11:00","12:00","13:00","14:00","14:30","15:00","15:30","16:00","17:00","18:00"];
   for (let i = 0; i < 14; i++) {
     const d = new Date();
     d.setDate(d.getDate() + i);
-    const rand = seededRand(clinicId * 100 + i * 7 + d.getDate());
-    const slots = ALL_SLOTS.filter(() => rand() > 0.5).slice(0, 5 + Math.floor(rand() * 4));
-    days.push({ dayDate: d, dayNum: d.getDate(), dayName: i === 0 ? "Сег" : i === 1 ? "Зав" : DAY_NAMES[d.getDay()], monthName: MONTH_NAMES[d.getMonth()], slots });
+    const available = allSlots.filter(() => Math.random() > 0.45).slice(0, 6 + Math.floor(Math.random() * 4));
+    days.push({ date: d, dayNum: d.getDate(), dayName: i === 0 ? "Сег" : i === 1 ? "Зав" : dayNames[d.getDay()], monthName: monthNames[d.getMonth()], slots: available });
   }
   return days;
 }
 
-const CLINIC_SLOTS: Record<number, ReturnType<typeof generateClinicSlots>> = Object.fromEntries(
-  clinics.map(c => [c.id, generateClinicSlots(c.id)])
-);
-
-const DAYS_META = Array.from({ length: 14 }, (_, i) => {
-  const d = new Date();
-  d.setDate(d.getDate() + i);
-  return { dayNum: d.getDate(), dayName: i === 0 ? "Сег" : i === 1 ? "Зав" : DAY_NAMES[d.getDay()], monthName: MONTH_NAMES[d.getMonth()] };
-});
+const DAYS_DATA = generateDays();
 
 type DoctorType = typeof doctors[0];
 function DoctorCard({ doc, index, onSelect, onBook }: { doc: DoctorType; index: number; onSelect: () => void; onBook: () => void }) {
   const [selectedDayIdx, setSelectedDayIdx] = useState(0);
-  const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [mapClinicId, setMapClinicId] = useState<number | null>(null);
+  const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null);
+  const [clinicOpen, setClinicOpen] = useState(false);
   const daysRef = useRef<HTMLDivElement>(null);
 
+  const currentDay = DAYS_DATA[selectedDayIdx];
+  const selectedClinicObj = clinics.find(c => c.id === selectedClinicId);
+
   const scrollDays = (dir: "left" | "right") => {
-    if (daysRef.current) daysRef.current.scrollBy({ left: dir === "left" ? -100 : 100, behavior: "smooth" });
+    if (daysRef.current) {
+      daysRef.current.scrollBy({ left: dir === "left" ? -120 : 120, behavior: "smooth" });
+    }
   };
-
-  const clinicsWithSlots = clinics.map(c => ({
-    ...c,
-    slots: CLINIC_SLOTS[c.id]?.[selectedDayIdx]?.slots ?? [],
-  })).filter(c => c.slots.length > 0);
-
-  const mapClinic = clinics.find(c => c.id === mapClinicId);
 
   return (
     <div
@@ -710,8 +693,8 @@ function DoctorCard({ doc, index, onSelect, onBook }: { doc: DoctorType; index: 
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       {/* Top info */}
-      <div className="flex gap-3 p-4 pb-3">
-        <img src={doc.avatar} alt={doc.name} className="w-[58px] h-[68px] rounded-2xl object-cover shrink-0" />
+      <div className="flex gap-4 p-4 pb-3">
+        <img src={doc.avatar} alt={doc.name} className="w-[60px] h-[70px] rounded-2xl object-cover shrink-0" />
         <div className="flex-1 min-w-0">
           <button onClick={onSelect} className="text-left w-full">
             <p className="font-golos font-semibold text-sm leading-snug hover:text-primary transition-colors">{doc.name}</p>
@@ -728,132 +711,105 @@ function DoctorCard({ doc, index, onSelect, onBook }: { doc: DoctorType; index: 
         </div>
       </div>
 
-      {/* Day picker */}
-      <div className="px-4 pb-3 border-t border-border/30 pt-3">
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">Выберите день</p>
-        <div className="flex items-center gap-1.5">
-          <button onClick={() => scrollDays("left")} className="w-6 h-6 flex items-center justify-center rounded-lg bg-muted/50 hover:bg-muted transition-colors shrink-0">
-            <Icon name="ChevronLeft" size={13} />
+      {/* Clinic selector */}
+      <div className="px-4 pb-3">
+        <div className="relative">
+          <button
+            onClick={() => setClinicOpen(o => !o)}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${clinicOpen ? "border-primary bg-primary/5 text-primary" : "border-border bg-muted/30 text-foreground hover:border-primary/50"}`}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <Icon name="Building2" size={13} className="text-primary shrink-0" />
+              <span className="truncate">{selectedClinicObj ? selectedClinicObj.name : "Выберите клинику"}</span>
+            </div>
+            <Icon name={clinicOpen ? "ChevronUp" : "ChevronDown"} size={14} className="shrink-0 ml-2 text-muted-foreground" />
           </button>
-          <div ref={daysRef} className="flex gap-1.5 overflow-x-auto scroll-hide flex-1">
-            {DAYS_META.map((day, i) => {
-              const hasAny = clinics.some(c => (CLINIC_SLOTS[c.id]?.[i]?.slots?.length ?? 0) > 0);
-              return (
+          {clinicOpen && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-border z-20 overflow-hidden animate-scale-in">
+              {clinics.map(c => (
                 <button
-                  key={i}
-                  onClick={() => { setSelectedDayIdx(i); setSelectedClinicId(null); setSelectedSlot(null); }}
-                  disabled={!hasAny}
-                  className={`shrink-0 w-[44px] flex flex-col items-center py-2 rounded-2xl border transition-all duration-200 ${
-                    selectedDayIdx === i
-                      ? "grad-primary text-white border-transparent shadow-md scale-105"
-                      : !hasAny
-                      ? "bg-muted/20 border-border/20 opacity-40 cursor-not-allowed"
-                      : "bg-white border-border hover:border-primary/50 hover:bg-primary/5"
-                  }`}
+                  key={c.id}
+                  onClick={() => { setSelectedClinicId(c.id); setClinicOpen(false); setSelectedSlot(null); }}
+                  className={`w-full flex items-start gap-3 px-3 py-2.5 text-left hover:bg-muted/40 transition-colors border-b border-border/30 last:border-0 ${selectedClinicId === c.id ? "bg-primary/5" : ""}`}
                 >
-                  <span className={`text-[9px] font-medium leading-none mb-0.5 ${selectedDayIdx === i ? "text-white/70" : "text-muted-foreground"}`}>{day.dayName}</span>
-                  <span className={`text-sm font-golos font-bold leading-none ${selectedDayIdx === i ? "text-white" : "text-foreground"}`}>{day.dayNum}</span>
-                  <span className={`text-[9px] leading-none mt-0.5 ${selectedDayIdx === i ? "text-white/60" : "text-muted-foreground"}`}>{day.monthName}</span>
-                  {hasAny && <div className={`w-1 h-1 rounded-full mt-1 ${selectedDayIdx === i ? "bg-white/60" : "bg-emerald-400"}`} />}
+                  <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${selectedClinicId === c.id ? "bg-primary" : "bg-border"}`} />
+                  <div>
+                    <p className="text-xs font-semibold leading-snug">{c.name}</p>
+                    <p className="text-muted-foreground text-[10px] mt-0.5">м. {c.metro} · {c.open}</p>
+                  </div>
+                  {selectedClinicId === c.id && <Icon name="Check" size={14} className="text-primary ml-auto shrink-0 mt-0.5" />}
                 </button>
-              );
-            })}
-          </div>
-          <button onClick={() => scrollDays("right")} className="w-6 h-6 flex items-center justify-center rounded-lg bg-muted/50 hover:bg-muted transition-colors shrink-0">
-            <Icon name="ChevronRight" size={13} />
-          </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Clinics with slots */}
-      <div className="px-4 pb-3">
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">Клиники и свободные слоты</p>
-        {clinicsWithSlots.length === 0 ? (
-          <p className="text-muted-foreground text-xs py-2 text-center">Нет свободных слотов на этот день</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {clinicsWithSlots.map(c => {
-              const isActive = selectedClinicId === c.id;
-              return (
-                <div key={c.id} className={`rounded-2xl border transition-all duration-200 overflow-hidden ${isActive ? "border-primary/50 bg-primary/3" : "border-border/50 bg-muted/20"}`}>
-                  {/* Clinic header */}
-                  <button
-                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left"
-                    onClick={() => {
-                      setSelectedClinicId(isActive ? null : c.id);
-                      setSelectedSlot(null);
-                      setMapClinicId(prev => prev === c.id ? prev : null);
-                    }}
-                  >
-                    <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 transition-colors ${isActive ? "grad-primary text-white" : "bg-muted text-muted-foreground"}`}>
-                      <Icon name="Building2" size={13} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold leading-none">{c.name}</p>
-                      <p className="text-muted-foreground text-[10px] mt-0.5">м. {c.metro} · {c.open}</p>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-emerald-600 text-[10px] font-medium bg-emerald-50 px-2 py-0.5 rounded-full">{c.slots.length} слотов</span>
-                      <button
-                        onClick={e => { e.stopPropagation(); setMapClinicId(prev => prev === c.id ? null : c.id); }}
-                        className={`w-6 h-6 flex items-center justify-center rounded-lg transition-colors ${mapClinicId === c.id ? "bg-primary text-white" : "bg-muted hover:bg-primary/10 text-muted-foreground hover:text-primary"}`}
-                        title="На карте"
-                      >
-                        <Icon name="MapPin" size={11} />
-                      </button>
-                      <Icon name={isActive ? "ChevronUp" : "ChevronDown"} size={13} className="text-muted-foreground" />
-                    </div>
-                  </button>
-
-                  {/* Yandex map */}
-                  {mapClinicId === c.id && (
-                    <div className="mx-3 mb-2 rounded-xl overflow-hidden border border-border/40 animate-fade-in">
-                      <iframe
-                        src={`https://maps.yandex.ru/?ll=${c.lon}%2C${c.lat}&z=15&l=map&pt=${c.lon}%2C${c.lat},pm2rdm~${c.lon}%2C${c.lat},pm2rdl&text=${encodeURIComponent(c.address)}&mode=whatshere`}
-                        width="100%"
-                        height="160"
-                        frameBorder="0"
-                        style={{ display: "block" }}
-                        title={c.name}
-                        allowFullScreen
-                      />
-                      <div className="flex items-center gap-1.5 px-3 py-2 bg-white/80">
-                        <Icon name="MapPin" size={12} className="text-primary shrink-0" />
-                        <span className="text-xs text-muted-foreground truncate">{c.address}</span>
-                        <a
-                          href={`https://maps.yandex.ru/?text=${encodeURIComponent(c.address)}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="ml-auto text-[10px] text-primary font-medium shrink-0 hover:underline"
-                        >
-                          Открыть
-                        </a>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Time slots */}
-                  {isActive && (
-                    <div className="px-3 pb-3 pt-1 flex flex-wrap gap-1.5 animate-fade-in">
-                      {c.slots.map(t => (
-                        <button
-                          key={t}
-                          onClick={() => setSelectedSlot(s => s === t ? null : t)}
-                          className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold border transition-all duration-150 ${
-                            selectedSlot === t
-                              ? "grad-primary text-white border-transparent shadow-sm scale-105"
-                              : "bg-white border-border hover:border-primary hover:text-primary"
-                          }`}
-                        >
-                          {t}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+      {/* Day slots */}
+      <div className="px-4 pb-2">
+        <div className="flex items-center gap-1.5 mb-2">
+          <button
+            onClick={() => scrollDays("left")}
+            className="w-6 h-6 flex items-center justify-center rounded-lg bg-muted/50 hover:bg-muted transition-colors shrink-0"
+          >
+            <Icon name="ChevronLeft" size={13} />
+          </button>
+          <div ref={daysRef} className="flex gap-1.5 overflow-x-auto scroll-hide flex-1">
+            {DAYS_DATA.map((day, i) => (
+              <button
+                key={i}
+                onClick={() => { setSelectedDayIdx(i); setSelectedSlot(null); }}
+                className={`shrink-0 w-[46px] flex flex-col items-center py-2 rounded-2xl border transition-all duration-200 ${
+                  selectedDayIdx === i
+                    ? "grad-primary text-white border-transparent shadow-md scale-105"
+                    : day.slots.length === 0
+                    ? "bg-muted/30 border-border/30 opacity-50 cursor-not-allowed"
+                    : "bg-white border-border hover:border-primary/50 hover:bg-primary/5"
+                }`}
+                disabled={day.slots.length === 0}
+              >
+                <span className={`text-[9px] font-medium leading-none mb-0.5 ${selectedDayIdx === i ? "text-white/70" : "text-muted-foreground"}`}>
+                  {day.dayName}
+                </span>
+                <span className={`text-sm font-golos font-bold leading-none ${selectedDayIdx === i ? "text-white" : "text-foreground"}`}>
+                  {day.dayNum}
+                </span>
+                <span className={`text-[9px] leading-none mt-0.5 ${selectedDayIdx === i ? "text-white/70" : "text-muted-foreground"}`}>
+                  {day.monthName}
+                </span>
+                {day.slots.length > 0 && (
+                  <div className={`w-1 h-1 rounded-full mt-1 ${selectedDayIdx === i ? "bg-white/60" : "bg-emerald-400"}`} />
+                )}
+              </button>
+            ))}
           </div>
+          <button
+            onClick={() => scrollDays("right")}
+            className="w-6 h-6 flex items-center justify-center rounded-lg bg-muted/50 hover:bg-muted transition-colors shrink-0"
+          >
+            <Icon name="ChevronRight" size={13} />
+          </button>
+        </div>
+
+        {/* Time slots */}
+        {currentDay.slots.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5 pt-1 pb-2">
+            {currentDay.slots.map(t => (
+              <button
+                key={t}
+                onClick={() => setSelectedSlot(s => s === t ? null : t)}
+                className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold border transition-all duration-150 ${
+                  selectedSlot === t
+                    ? "grad-primary text-white border-transparent shadow-sm scale-105"
+                    : "bg-white border-border text-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-xs text-center py-3">Нет свободных слотов</p>
         )}
       </div>
 
