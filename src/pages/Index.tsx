@@ -704,8 +704,9 @@ function DoctorCard({ doc, index, onSelect, onBook }: { doc: DoctorType; index: 
             <Icon name="Star" size={11} className="text-amber-400 fill-amber-400" />
             <span className="text-xs font-semibold">{doc.rating}</span>
             <span className="text-muted-foreground text-xs">({doc.reviews})</span>
-            <span className="text-border mx-1">·</span>
-            <span className="font-golos font-semibold text-xs text-foreground">{doc.price}</span>
+          </div>
+          <div className="mt-1.5">
+            <PriceTag price={doc.price} discount={doc.discount} size="sm" />
           </div>
         </div>
       </div>
@@ -814,13 +815,10 @@ function DoctorCard({ doc, index, onSelect, onBook }: { doc: DoctorType; index: 
 
       {/* Footer */}
       <div className="px-4 pb-4 pt-2 border-t border-border/40 flex items-center gap-2">
-        <div className="flex-1">
-          <PriceTag price={doc.price} discount={doc.discount} size="sm" />
-          <div className="flex gap-1.5 flex-wrap mt-1">
-            {doc.tags.map((t: string) => (
-              <span key={t} className="px-2 py-0.5 rounded-full bg-blue-50 text-primary text-[10px] font-medium">{t}</span>
-            ))}
-          </div>
+        <div className="flex gap-1.5 flex-wrap flex-1">
+          {doc.tags.map((t: string) => (
+            <span key={t} className="px-2 py-0.5 rounded-full bg-blue-50 text-primary text-[10px] font-medium">{t}</span>
+          ))}
         </div>
         <button
           onClick={() => selectedSlot ? onBook() : onSelect()}
