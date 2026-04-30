@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Icon from "@/components/ui/icon";
 
 const CLINIC_IMG = "https://cdn.poehali.dev/projects/2a12294a-315c-43a4-8358-1d053e21c963/files/4c9788f9-f5a4-49f2-bcf0-9b4f716bdcd0.jpg";
@@ -700,44 +700,181 @@ export default function Index() {
   );
 }
 
+function generateDays() {
+  const days: { date: Date; dayNum: number; dayName: string; monthName: string; slots: string[] }[] = [];
+  const dayNames = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+  const monthNames = ["янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+  const allSlots = ["09:00","09:30","10:00","10:30","11:00","12:00","13:00","14:00","14:30","15:00","15:30","16:00","17:00","18:00"];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    const available = allSlots.filter(() => Math.random() > 0.45).slice(0, 6 + Math.floor(Math.random() * 4));
+    days.push({ date: d, dayNum: d.getDate(), dayName: i === 0 ? "Сег" : i === 1 ? "Зав" : dayNames[d.getDay()], monthName: monthNames[d.getMonth()], slots: available });
+  }
+  return days;
+}
+
+const DAYS_DATA = generateDays();
+
 type DoctorType = typeof doctors[0];
 function DoctorCard({ doc, index, onSelect, onBook }: { doc: DoctorType; index: number; onSelect: () => void; onBook: () => void }) {
+  const [selectedDayIdx, setSelectedDayIdx] = useState(0);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null);
+  const [clinicOpen, setClinicOpen] = useState(false);
+  const daysRef = useRef<HTMLDivElement>(null);
+
+  const currentDay = DAYS_DATA[selectedDayIdx];
+  const selectedClinicObj = clinics.find(c => c.id === selectedClinicId);
+
+  const scrollDays = (dir: "left" | "right") => {
+    if (daysRef.current) {
+      daysRef.current.scrollBy({ left: dir === "left" ? -120 : 120, behavior: "smooth" });
+    }
+  };
+
   return (
     <div
-      className="bg-white rounded-3xl shadow-sm border border-border/50 overflow-hidden card-hover animate-fade-in"
+      className="bg-white rounded-3xl shadow-sm border border-border/50 overflow-hidden animate-fade-in"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
-      <div className="flex gap-4 p-4">
-        <img src={doc.avatar} alt={doc.name} className="w-20 h-24 rounded-2xl object-cover shrink-0" />
+      {/* Top info */}
+      <div className="flex gap-4 p-4 pb-3">
+        <img src={doc.avatar} alt={doc.name} className="w-[60px] h-[70px] rounded-2xl object-cover shrink-0" />
         <div className="flex-1 min-w-0">
-          <button onClick={onSelect} className="text-left">
+          <button onClick={onSelect} className="text-left w-full">
             <p className="font-golos font-semibold text-sm leading-snug hover:text-primary transition-colors">{doc.name}</p>
           </button>
-          <p className="text-primary text-xs font-medium mt-0.5">{doc.spec}</p>
-          <p className="text-muted-foreground text-xs mt-0.5">{doc.exp} опыта · {doc.clinic}</p>
-          <div className="flex items-center gap-1 mt-1.5">
-            <Icon name="Star" size={12} className="text-amber-400 fill-amber-400" />
+          <p className="text-primary text-xs font-medium mt-0.5">{doc.spec} · {doc.exp}</p>
+          <div className="flex items-center gap-1 mt-1">
+            <Icon name="Star" size={11} className="text-amber-400 fill-amber-400" />
             <span className="text-xs font-semibold">{doc.rating}</span>
             <span className="text-muted-foreground text-xs">({doc.reviews})</span>
-          </div>
-          <div className="flex items-center justify-between mt-3">
-            <div>
-              <p className="text-[10px] text-muted-foreground">Ближайший приём</p>
-              <p className="text-xs font-medium text-emerald-600">{doc.nearest}</p>
-            </div>
-            <button onClick={onBook} className="grad-primary text-white text-xs font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-all shadow-sm">
-              Записаться
-            </button>
+            <span className="text-border mx-1">·</span>
+            <span className="font-golos font-semibold text-xs text-foreground">{doc.price}</span>
           </div>
         </div>
       </div>
-      <div className="px-4 pb-3 flex items-center justify-between border-t border-border/40 pt-2.5">
-        <span className="font-golos font-semibold text-sm">{doc.price}</span>
-        <div className="flex gap-1.5 flex-wrap justify-end">
+
+      {/* Clinic selector */}
+      <div className="px-4 pb-3">
+        <div className="relative">
+          <button
+            onClick={() => setClinicOpen(o => !o)}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border text-xs font-medium transition-all ${clinicOpen ? "border-primary bg-primary/5 text-primary" : "border-border bg-muted/30 text-foreground hover:border-primary/50"}`}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <Icon name="Building2" size={13} className="text-primary shrink-0" />
+              <span className="truncate">{selectedClinicObj ? selectedClinicObj.name : "Выберите клинику"}</span>
+            </div>
+            <Icon name={clinicOpen ? "ChevronUp" : "ChevronDown"} size={14} className="shrink-0 ml-2 text-muted-foreground" />
+          </button>
+          {clinicOpen && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-border z-20 overflow-hidden animate-scale-in">
+              {clinics.map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => { setSelectedClinicId(c.id); setClinicOpen(false); setSelectedSlot(null); }}
+                  className={`w-full flex items-start gap-3 px-3 py-2.5 text-left hover:bg-muted/40 transition-colors border-b border-border/30 last:border-0 ${selectedClinicId === c.id ? "bg-primary/5" : ""}`}
+                >
+                  <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${selectedClinicId === c.id ? "bg-primary" : "bg-border"}`} />
+                  <div>
+                    <p className="text-xs font-semibold leading-snug">{c.name}</p>
+                    <p className="text-muted-foreground text-[10px] mt-0.5">м. {c.metro} · {c.open}</p>
+                  </div>
+                  {selectedClinicId === c.id && <Icon name="Check" size={14} className="text-primary ml-auto shrink-0 mt-0.5" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Day slots */}
+      <div className="px-4 pb-2">
+        <div className="flex items-center gap-1.5 mb-2">
+          <button
+            onClick={() => scrollDays("left")}
+            className="w-6 h-6 flex items-center justify-center rounded-lg bg-muted/50 hover:bg-muted transition-colors shrink-0"
+          >
+            <Icon name="ChevronLeft" size={13} />
+          </button>
+          <div ref={daysRef} className="flex gap-1.5 overflow-x-auto scroll-hide flex-1">
+            {DAYS_DATA.map((day, i) => (
+              <button
+                key={i}
+                onClick={() => { setSelectedDayIdx(i); setSelectedSlot(null); }}
+                className={`shrink-0 w-[46px] flex flex-col items-center py-2 rounded-2xl border transition-all duration-200 ${
+                  selectedDayIdx === i
+                    ? "grad-primary text-white border-transparent shadow-md scale-105"
+                    : day.slots.length === 0
+                    ? "bg-muted/30 border-border/30 opacity-50 cursor-not-allowed"
+                    : "bg-white border-border hover:border-primary/50 hover:bg-primary/5"
+                }`}
+                disabled={day.slots.length === 0}
+              >
+                <span className={`text-[9px] font-medium leading-none mb-0.5 ${selectedDayIdx === i ? "text-white/70" : "text-muted-foreground"}`}>
+                  {day.dayName}
+                </span>
+                <span className={`text-sm font-golos font-bold leading-none ${selectedDayIdx === i ? "text-white" : "text-foreground"}`}>
+                  {day.dayNum}
+                </span>
+                <span className={`text-[9px] leading-none mt-0.5 ${selectedDayIdx === i ? "text-white/70" : "text-muted-foreground"}`}>
+                  {day.monthName}
+                </span>
+                {day.slots.length > 0 && (
+                  <div className={`w-1 h-1 rounded-full mt-1 ${selectedDayIdx === i ? "bg-white/60" : "bg-emerald-400"}`} />
+                )}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => scrollDays("right")}
+            className="w-6 h-6 flex items-center justify-center rounded-lg bg-muted/50 hover:bg-muted transition-colors shrink-0"
+          >
+            <Icon name="ChevronRight" size={13} />
+          </button>
+        </div>
+
+        {/* Time slots */}
+        {currentDay.slots.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5 pt-1 pb-2">
+            {currentDay.slots.map(t => (
+              <button
+                key={t}
+                onClick={() => setSelectedSlot(s => s === t ? null : t)}
+                className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold border transition-all duration-150 ${
+                  selectedSlot === t
+                    ? "grad-primary text-white border-transparent shadow-sm scale-105"
+                    : "bg-white border-border text-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-xs text-center py-3">Нет свободных слотов</p>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 pb-4 pt-1 border-t border-border/40 flex items-center gap-2">
+        <div className="flex gap-1.5 flex-wrap flex-1">
           {doc.tags.map((t: string) => (
             <span key={t} className="px-2 py-0.5 rounded-full bg-blue-50 text-primary text-[10px] font-medium">{t}</span>
           ))}
         </div>
+        <button
+          onClick={() => selectedSlot ? onBook() : onSelect()}
+          className={`shrink-0 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm ${
+            selectedSlot
+              ? "grad-primary text-white hover:opacity-90"
+              : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
+          }`}
+        >
+          {selectedSlot ? "Записаться" : "Смотреть"}
+        </button>
       </div>
     </div>
   );
